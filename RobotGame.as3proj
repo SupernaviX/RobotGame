@@ -16,7 +16,6 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="..\flixel 2.43" />
     <class path="lib" />
   </classpaths>
   <!-- Build options -->
