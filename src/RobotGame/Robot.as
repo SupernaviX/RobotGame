@@ -14,7 +14,7 @@ package RobotGame
 		public var jumpControl:String
 		public var leftControl:String
 		public var rightControl:String
-		public var repulsionSpeed:Number = 16
+		public var repulsionSpeed:Number = 192
 		
 		//[Embed(src = "../resources/robot.png")]public var sprRobot: Class
 		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String) 
@@ -25,8 +25,8 @@ package RobotGame
 			leftControl = LeftControl
 			rightControl = RightControl
 			//this.loadGraphic(sprRobot)
-			this.makeGraphic(32, 32)
-			var shape:b2CircleShape = new b2CircleShape(16/ratio)
+			this.makeGraphic(96, 96)
+			var shape:b2CircleShape = new b2CircleShape(48/ratio)
 			createBody(shape, b2Body.b2_dynamicBody)
 			_obj.SetLinearDamping(0.1)
 		}
@@ -42,7 +42,7 @@ package RobotGame
 //				canJump = false
 			}
 			var speed:b2Vec2 = _obj.GetLinearVelocity()
-			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -12, 12), speed.y))
+			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
 			super.update()
 		}
 		public function addContact(obj:b2Body, dir:b2Vec2):void {
