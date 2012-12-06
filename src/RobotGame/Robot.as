@@ -14,9 +14,10 @@ package RobotGame
 		public var jumpControl:String
 		public var leftControl:String
 		public var rightControl:String
-		public var repulsionSpeed:Number = 192
+		public var repulsionSpeed:Number = 192;
+		private var imageIndex:Number = 0;
 		
-		//[Embed(src = "../resources/robot.png")]public var sprRobot: Class
+		[Embed(source='../resources/roball.png')] public var sprRobot: Class
 		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String) 
 		{
 			super(World, X, Y)
@@ -24,8 +25,8 @@ package RobotGame
 			jumpControl = JumpControl
 			leftControl = LeftControl
 			rightControl = RightControl
-			//this.loadGraphic(sprRobot)
-			this.makeGraphic(96, 96)
+			this.loadGraphic(sprRobot,true,true,98,98)
+			//this.makeGraphic(96, 96)
 			var shape:b2CircleShape = new b2CircleShape(48/ratio)
 			createBody(shape, b2Body.b2_dynamicBody)
 			_obj.SetLinearDamping(0.1)
@@ -36,6 +37,10 @@ package RobotGame
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() - 1)
 			else if (FlxG.keys.pressed(rightControl))
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() + 1)
+			imageIndex += _obj.GetAngularVelocity() * 5.625 / 360
+			if (imageIndex >= 16) imageIndex -= 16;
+			if (imageIndex < 0) imageIndex += 16;
+			frame = Math.floor(imageIndex);
 			if (FlxG.keys.justPressed(jumpControl)) {
 				
 				_obj.ApplyImpulse(calculateJumpDir(), _obj.GetPosition())

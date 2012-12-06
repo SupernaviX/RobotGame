@@ -6,7 +6,7 @@ package RobotGame
 	{
 		public function RobotGame()
 		{
-			super(1024, 768, PlayState, 1);
+			super(1024, 768, RobotGame.PlayState, 1);
 		}
 		
 	}
