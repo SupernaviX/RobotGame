@@ -8,8 +8,6 @@ package RobotGame
 	import org.flixel.*
 	public class Robot extends SolidObject
 	{
-		//public var canJump:Boolean
-		public var contactsAndDirections:Dictionary;
 		public var jumpDir:b2Vec2
 		public var jumpControl:String
 		public var leftControl:String
@@ -20,7 +18,6 @@ package RobotGame
 		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String) 
 		{
 			super(World, X, Y)
-			contactsAndDirections = new Dictionary()
 			jumpControl = JumpControl
 			leftControl = LeftControl
 			rightControl = RightControl
@@ -36,25 +33,21 @@ package RobotGame
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() - 1)
 			else if (FlxG.keys.pressed(rightControl))
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() + 1)
-			if (FlxG.keys.justPressed(jumpControl)) {
-				
+			if (FlxG.keys.justPressed(jumpControl))
 				_obj.ApplyImpulse(calculateJumpDir(), _obj.GetPosition())
-//				canJump = false
-			}
 			var speed:b2Vec2 = _obj.GetLinearVelocity()
 			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
 			super.update()
 		}
-		public function addContact(obj:b2Body, dir:b2Vec2):void {
-			contactsAndDirections[obj] = dir
-		}
-		public function subtractContact(obj:b2Body):void {
-			delete contactsAndDirections[obj]
-		}
 		public function calculateJumpDir():b2Vec2 {
 			var dir:b2Vec2 = new b2Vec2()
-			for each (var value:b2Vec2 in contactsAndDirections) {
-				dir.Add(value)
+			for (var key:Object in normalsFromCollisions) {
+				var otherObject:b2Body = key as b2Body,
+					otherDir:b2Vec2 = normalsFromCollisions[key]
+				dir.Add(otherDir)
+				otherDir.NegativeSelf()
+				otherDir.Multiply(repulsionSpeed)
+				otherObject.ApplyImpulse(otherDir, otherObject.GetPosition())
 			}
 			dir.Normalize()
 			dir.Multiply(repulsionSpeed)
