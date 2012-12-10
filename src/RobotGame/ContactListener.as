@@ -7,43 +7,33 @@ package RobotGame
 	public class ContactListener extends b2ContactListener
 	{
 		override public function BeginContact(contact:b2Contact):void {
-			var first:Robot = (contact.GetFixtureA().GetUserData() is Robot) ? contact.GetFixtureA().GetUserData() : null,
-				second:Robot = (contact.GetFixtureB().GetUserData() is Robot) ? contact.GetFixtureB().GetUserData() : null
-			if (first != null) {
-				var fDir:b2Vec2 = new b2Vec2()
-				if (contact.GetManifold().m_type == b2Manifold.e_circles) {
-					fDir.Add(contact.GetFixtureA().GetBody().GetPosition())
-					fDir.Subtract(contact.GetFixtureB().GetBody().GetPosition())
-					fDir.Normalize()
-				}
-				else if (contact.GetManifold().m_type == b2Manifold.e_faceA)
-					fDir.Subtract(contact.GetManifold().m_localPlaneNormal)
-				else
-					fDir.Add(contact.GetManifold().m_localPlaneNormal)
-				first.addContact(contact.GetFixtureB().GetBody(), fDir)
+			var first:SolidObject = contact.GetFixtureA().GetBody().GetUserData(),
+				second:SolidObject = contact.GetFixtureB().GetBody().GetUserData(),
+				dir:b2Vec2 = new b2Vec2()
+			switch (contact.GetManifold().m_type) {
+			case b2Manifold.e_circles:
+				dir.Add(contact.GetFixtureA().GetBody().GetPosition())
+				dir.Subtract(contact.GetFixtureB().GetBody().GetPosition())
+				dir.Normalize()
+				break
+			case b2Manifold.e_faceA:
+				dir.Subtract(contact.GetManifold().m_localPlaneNormal)
+				break
+			case b2Manifold.e_faceB:
+				dir.Add(contact.GetManifold().m_localPlaneNormal)
+				break
 			}
-			if (second != null) {
-				var sDir:b2Vec2 = new b2Vec2()
-				if (contact.GetManifold().m_type == b2Manifold.e_circles) {
-					sDir.Add(contact.GetFixtureB().GetBody().GetPosition())
-					sDir.Subtract(contact.GetFixtureA().GetBody().GetPosition())
-					sDir.Normalize()
-				}
-				else if (contact.GetManifold().m_type == b2Manifold.e_faceA)
-					sDir.Add(contact.GetManifold().m_localPlaneNormal)
-				else
-					sDir.Subtract(contact.GetManifold().m_localPlaneNormal)
-				second.addContact(contact.GetFixtureA().GetBody(), sDir)
-			}
+			first.addNormal(contact.GetFixtureB().GetBody(), dir)
+			second.addNormal(contact.GetFixtureA().GetBody(), dir.GetNegative())
 		}
 		
 		override public function EndContact(contact:b2Contact):void {
 			var first:Robot = (contact.GetFixtureA().GetUserData() is Robot) ? contact.GetFixtureA().GetUserData() : null,
 				second:Robot = (contact.GetFixtureB().GetUserData() is Robot) ? contact.GetFixtureB().GetUserData() : null
 			if (first != null)
-				first.subtractContact(contact.GetFixtureB().GetBody())
+				first.subtractNormal(contact.GetFixtureB().GetBody())
 			if (second != null)
-				second.subtractContact(contact.GetFixtureA().GetBody())
+				second.subtractNormal(contact.GetFixtureA().GetBody())
 		}
 	}
 }

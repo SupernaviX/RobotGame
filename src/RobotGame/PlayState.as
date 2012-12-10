@@ -83,9 +83,7 @@ package RobotGame
 		}
 */		
 		override public function update():void {
-			super.update();
-			var xSpeed:Number,
-				ySpeed:Number
+			super.update()
 			_world.Step(FlxG.elapsed, 10, 10)
 			_world.ClearForces();
 			
