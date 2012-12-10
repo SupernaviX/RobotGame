@@ -14,7 +14,7 @@ package RobotGame
 		public var jumpControl:String
 		public var leftControl:String
 		public var rightControl:String
-		public var repulsionSpeed:Number = 192;
+		public var repulsionSpeed:Number = 192*1.5; // 2 is too much
 		private var imageIndex:Number = 0;
 		
 		[Embed(source='../resources/roball.png')] public var sprRobot: Class
@@ -30,23 +30,60 @@ package RobotGame
 			var shape:b2CircleShape = new b2CircleShape(48/ratio)
 			createBody(shape, b2Body.b2_dynamicBody)
 			_obj.SetLinearDamping(0.1)
+			_obj.SetAngularDamping(5)
 		}
 		override public function update():void {
 			var multiplier:Number = _obj.GetMass()
-			if (FlxG.keys.pressed(leftControl))
-				_obj.SetAngularVelocity(_obj.GetAngularVelocity() - 1)
-			else if (FlxG.keys.pressed(rightControl))
-				_obj.SetAngularVelocity(_obj.GetAngularVelocity() + 1)
+			var angVelMult:Number = 1; // holds any mults to increase angular velocity (e.g. angOppositeMult)
+			var angOppositeMult:Number = 1.3; // mult to increase angular velocity
+			var baseHeight:Number = 32.9; // anything above this means they are below the stage - this is ground level (opposite logic since origin starts in top-left)
+			// Left ('A' or Left)
+			var heightAirControl:Number = 3; // height above baseHeight at which can do air control
+			var airSpeedControl:Number = 0.3; // give linear velocity in the air
+			var groundSpeedControl:Number = 0.3; // give linear velocity on ground
+			var speed:b2Vec2 = _obj.GetLinearVelocity(); // holds the speed at points in this method
+			if (FlxG.keys.pressed(leftControl)) {
+				// If we're in the air
+				if (_obj.GetPosition().y < (baseHeight - heightAirControl)) {
+					_obj.SetLinearVelocity(new b2Vec2(speed.x - airSpeedControl, speed.y));
+					//_obj.ApplyForce(new b2Vec2(-airSpeedControl*10*2, 0), _obj.GetPosition());
+				}
+				// Else on the ground
+				else {
+					// If we are going right, allow Left to combat it better
+					if (_obj.GetAngularVelocity() > 0)
+						angVelMult = angOppositeMult;
+					_obj.SetAngularVelocity(_obj.GetAngularVelocity() - 1 * angVelMult)
+					_obj.SetLinearVelocity(new b2Vec2(speed.x - groundSpeedControl, speed.y));
+				}
+			}
+			// Right ('D' or Right)
+			else if (FlxG.keys.pressed(rightControl)) {
+				// If we're in the air
+				if (_obj.GetPosition().y < (baseHeight - heightAirControl)) {
+					_obj.SetLinearVelocity(new b2Vec2(speed.x + airSpeedControl, speed.y));
+					//_obj.ApplyForce(new b2Vec2(airSpeedControl*10*2, 0), _obj.GetPosition());
+				}
+				else {
+					// If we are going left, allow Right to combat it better
+					if (_obj.GetAngularVelocity() < 0)
+						angVelMult = angOppositeMult;
+					_obj.SetAngularVelocity(_obj.GetAngularVelocity() + 1 * angVelMult)
+					_obj.SetLinearVelocity(new b2Vec2(speed.x + groundSpeedControl, speed.y));
+				}
+			}
+			// Getting correct running sprite
 			imageIndex += _obj.GetAngularVelocity() * 5.625 / 360
 			if (imageIndex >= 16) imageIndex -= 16;
 			if (imageIndex < 0) imageIndex += 16;
 			frame = Math.floor(imageIndex);
+			// Jumping ('W' or Up)
 			if (FlxG.keys.justPressed(jumpControl)) {
-				
 				_obj.ApplyImpulse(calculateJumpDir(), _obj.GetPosition())
 //				canJump = false
 			}
-			var speed:b2Vec2 = _obj.GetLinearVelocity()
+			// Keeping linear speed reasonable
+			speed = _obj.GetLinearVelocity()
 			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
 			super.update()
 		}

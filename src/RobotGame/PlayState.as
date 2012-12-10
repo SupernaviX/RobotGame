@@ -15,7 +15,7 @@ package RobotGame
 		
 		override public function create(): void {
 			super.create()
-			var gravity:b2Vec2 = new b2Vec2(0, 9.8)
+			var gravity:b2Vec2 = new b2Vec2(0, 9.8*2)
 			_world = new b2World(gravity, false)
 			_world.SetContactListener(new ContactListener())
 			

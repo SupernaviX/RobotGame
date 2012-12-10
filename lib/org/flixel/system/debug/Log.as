@@ -64,6 +64,7 @@ package org.flixel.system.debug
 		{
 			if(_lines.length <= 0)
 				_text.text = "";
+			trace(Text);
 			_lines.push(Text);
 			if(_lines.length > MAX_LOG_LINES)
 			{
