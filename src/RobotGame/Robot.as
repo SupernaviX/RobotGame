@@ -31,6 +31,7 @@ package RobotGame
 			createBody(shape, b2Body.b2_dynamicBody)
 			_obj.SetLinearDamping(0.1)
 			_obj.SetAngularDamping(5)
+			_obj.GetFixtureList().SetRestitution(0.1) // dunno? Still bouncy.
 		}
 		override public function update():void {
 			var multiplier:Number = _obj.GetMass()
@@ -39,7 +40,7 @@ package RobotGame
 			var baseHeight:Number = 32.9; // anything above this means they are below the stage - this is ground level (opposite logic since origin starts in top-left)
 			// Left ('A' or Left)
 			var heightAirControl:Number = 3; // height above baseHeight at which can do air control
-			var airSpeedControl:Number = 0.3; // give linear velocity in the air
+			var airSpeedControl:Number = 0.3; // give linear velocity in the air // Note: Might be a liiittle too much. Just your preference.
 			var groundSpeedControl:Number = 0.3; // give linear velocity on ground
 			var speed:b2Vec2 = _obj.GetLinearVelocity(); // holds the speed at points in this method
 			if (FlxG.keys.pressed(leftControl)) {
@@ -85,6 +86,7 @@ package RobotGame
 			// Keeping linear speed reasonable
 			speed = _obj.GetLinearVelocity()
 			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
+			
 			super.update()
 		}
 		public function addContact(obj:b2Body, dir:b2Vec2):void {
@@ -101,6 +103,12 @@ package RobotGame
 			dir.Normalize()
 			dir.Multiply(repulsionSpeed)
 			return dir
+		}
+		
+		public function resetAt(X:Number, Y:Number):void {
+			SetPosition(X, Y);
+			_obj.SetLinearVelocity(new b2Vec2(0, 0));
+			_obj.SetAngularVelocity(0);
 		}
 	}
 }
