@@ -8,7 +8,7 @@ package RobotGame
 	
 	public class SolidObject extends FlxSprite
 	{
-		protected var ratio:Number = 20
+		public var ratio:Number = 20; // FTFY (public so can access from PlayState)
 		
 		//public var _fixDef:b2FixtureDef
 		//public var _bodyDef:b2BodyDef
@@ -46,6 +46,12 @@ package RobotGame
 			
 			_obj = _world.CreateBody(_bodyDef)
 			_obj.CreateFixture(_fixDef)
+		}
+		
+		public function SetPosition(X:Number, Y:Number):void {
+			x = X;
+			y = Y;
+			_obj.SetPosition(new b2Vec2((X + (width / 2)) / ratio, (Y + (height / 2)) / ratio));
 		}
 		
 		override public function update():void {

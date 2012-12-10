@@ -9,19 +9,72 @@ package RobotGame
 
 	public class PlayState extends FlxState
 	{
-		public var player:Robot
-		public var floor:Wall
+		// World
 		public var _world:b2World
+		// Stage
+		public var floor:Wall
+		public var floorLeft:Wall
+		public var floorRight:Wall
+		public var wallLeft:Wall
+		public var wallRight:Wall
+		// Players
+		public var NO_WINNER:Number = 0;
+		//public var bottomOfStage:Number = 50.0; // might be less, but this is fine (768/20)
+		public var player1:Robot
+		public var player1_ID:Number = 1;
+		public var player1_startX:Number = (1024 - 640) - 98/*width of Robot*/; // was 320 (now 286)
+		public var player2:Robot
+		public var player2_ID:Number = 2;
+		public var player2_startX:Number = 640;
+		public var players_startY:Number = 240;
+		// Game state
+		public var winner:Number = NO_WINNER;
+		public var score:Number = 0;
+		public var player1_damg:Number = 0.0; // [0.0, 10.0] // for the lulz
+		public var player2_damg:Number = 0.0; // [0.0, 10.0]
 		
 		override public function create(): void {
 			super.create()
-			var gravity:b2Vec2 = new b2Vec2(0, 9.8)
+			var gravity:b2Vec2 = new b2Vec2(0, 9.8*2)
 			_world = new b2World(gravity, false)
 			_world.SetContactListener(new ContactListener())
+			//FlxG.worldBounds = new FlxRect(0, 0, 1024, 768)
 			
-			add(player = new Robot(_world, 320, 240, "W", "A", "D"))
-			add(new Robot(_world, 640, 240, "UP", "LEFT", "RIGHT"))
-			add(floor = new Wall(_world, 64, FlxG.height - 64, FlxG.width - 128, 64))
+			initializePlayers();
+			
+			makeStage();
+		}
+		
+		public function initializePlayers():void {
+			add(player1 = new Robot(_world, player1_startX, players_startY, "W", "A", "D"))
+			add(player2 = new Robot(_world, player2_startX, players_startY, "UP", "LEFT", "RIGHT"))
+		}
+		
+		public function makeStage():void {
+			// Single platform ' _____ '
+			//add(floor = new Wall(_world, 64, FlxG.height - 64, FlxG.width - 128, 64))
+			// Multiple platforms '_ ___ _'
+			var blockWidth:Number = 100;
+			var platHeight:Number = 64;
+			var platSpacing:Number = 200;
+			var wallWidth:Number = 10;
+			var wallHeight:Number = 768 + 100; // for good measure
+			// Floor(s)
+			add(floorLeft = new Wall(_world, 0, FlxG.height - platHeight, blockWidth, platHeight))
+			add(floor = new Wall(_world, blockWidth + platSpacing, FlxG.height - platHeight, FlxG.width - (blockWidth + platSpacing) * 2, platHeight))
+			add(floorRight = new Wall(_world, FlxG.width - blockWidth, FlxG.height - platHeight, blockWidth, platHeight))
+			// Walls
+			add(wallLeft = new Wall(_world, -wallWidth, 0, wallWidth, wallHeight))
+			add(wallRight = new Wall(_world, FlxG.width, 0, wallWidth, wallHeight))
+			//add(new Wall(_world, 0, 0, FlxG.width, 2)) // ceiling // adding this with restitution of 10 is quite cool 8O
+		}
+		
+		public function resetRobotGame():void {
+			player1.resetAt(player1_startX, players_startY);
+			player2.resetAt(player2_startX, players_startY);
+			
+			winner = NO_WINNER;
+			score = 0;
 		}
 		
 		override public function update():void {
@@ -30,6 +83,25 @@ package RobotGame
 				ySpeed:Number
 			_world.Step(FlxG.elapsed, 10, 10)
 			_world.ClearForces();
+			
+			if (winner == NO_WINNER) {
+				// Still playing
+				if (player1.y > FlxG.height) {
+					//_world.DestroyBody(player1._obj);
+					winner = player2_ID;
+				}
+				else if (player2.y > FlxG.height) {
+					//_world.DestroyBody(player2._obj);
+					winner = player1_ID;
+				}
+			}
+			else {
+				// Sombody won - TODO: display text
+				// Display it until you click (because if use one of the player movements, they may still be holding that key)
+				if (FlxG.mouse.pressed()) {
+					resetRobotGame();
+				}
+			}
 		}
 	}
 
