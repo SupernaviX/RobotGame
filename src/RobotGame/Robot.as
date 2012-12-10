@@ -9,29 +9,39 @@ package RobotGame
 	public class Robot extends SolidObject
 	{
 		//public var canJump:Boolean
+		[Embed(source = '../resources/roball.png')] private static var sprChar:Class;
+		[Embed(source = '../resources/roball2.png')] private static var sprChar2:Class;
+		[Embed(source = '../resources/roball3.png')] private static var sprChar3:Class;
+		[Embed(source = '../resources/roball4.png')] private static var sprChar4:Class;
+		private static var charSprites:Array = [sprChar, sprChar2, sprChar3, sprChar4];
+		
 		public var contactsAndDirections:Dictionary;
 		public var jumpDir:b2Vec2
 		public var jumpControl:String
 		public var leftControl:String
 		public var rightControl:String
-		public var repulsionSpeed:Number = 192*1.5; // 2 is too much
+		public var repulsionSpeed:Number = 64
 		private var imageIndex:Number = 0;
+		private var type:int;
+		private var name:String;
 		
-		[Embed(source='../resources/roball.png')] public var sprRobot: Class
-		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String) 
+		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String, Type:int, Name:String) 
 		{
 			super(World, X, Y)
 			contactsAndDirections = new Dictionary()
 			jumpControl = JumpControl
 			leftControl = LeftControl
 			rightControl = RightControl
-			this.loadGraphic(sprRobot,true,true,98,98)
+			this.loadGraphic(charSprites[Type],true,true,49,49)
 			//this.makeGraphic(96, 96)
-			var shape:b2CircleShape = new b2CircleShape(48/ratio)
+			var shape:b2CircleShape = new b2CircleShape(24.5/ratio)
 			createBody(shape, b2Body.b2_dynamicBody)
 			_obj.SetLinearDamping(0.1)
 			_obj.SetAngularDamping(5)
 			_obj.GetFixtureList().SetRestitution(0.1) // dunno? Still bouncy.
+			_obj.SetLinearDamping(0.1);
+			type = Type;
+			name = Name;
 		}
 		override public function update():void {
 			var multiplier:Number = _obj.GetMass()
@@ -88,6 +98,11 @@ package RobotGame
 			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
 			
 			super.update()
+			
+			if (x > FlxG.width || x < -width || y > FlxG.height) {
+				PlayState(FlxG.state).remove(this);
+				PlayState(FlxG.state).win(name);
+			}
 		}
 		public function addContact(obj:b2Body, dir:b2Vec2):void {
 			contactsAndDirections[obj] = dir

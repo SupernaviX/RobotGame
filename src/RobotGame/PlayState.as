@@ -32,6 +32,8 @@ package RobotGame
 		public var score:Number = 0;
 		public var player1_damg:Number = 0.0; // [0.0, 10.0] // for the lulz
 		public var player2_damg:Number = 0.0; // [0.0, 10.0]
+		public static var p1type:int = 0, p2type:int = 1;
+		private var gameEnd:Boolean = false;
 		
 		override public function create(): void {
 			super.create()
@@ -46,8 +48,8 @@ package RobotGame
 		}
 		
 		public function initializePlayers():void {
-			add(player1 = new Robot(_world, player1_startX, players_startY, "W", "A", "D"))
-			add(player2 = new Robot(_world, player2_startX, players_startY, "UP", "LEFT", "RIGHT"))
+			add(player1 = new Robot(_world, player1_startX, players_startY, "W", "A", "D", p1type, "Player 1"))
+			add(player2 = new Robot(_world, player2_startX, players_startY, "UP", "LEFT", "RIGHT", p2type, "Player 2"))
 		}
 		
 		public function makeStage():void {
@@ -69,22 +71,25 @@ package RobotGame
 			//add(new Wall(_world, 0, 0, FlxG.width, 2)) // ceiling // adding this with restitution of 10 is quite cool 8O
 		}
 		
-		public function resetRobotGame():void {
+/*		public function resetRobotGame():void {
 			player1.resetAt(player1_startX, players_startY);
 			player2.resetAt(player2_startX, players_startY);
 			
 			winner = NO_WINNER;
 			score = 0;
+			add(player = new Robot(_world, 320, 240, "W", "A", "D", p1type, "Player 1"))
+			add(new Robot(_world, 640, 240, "UP", "LEFT", "RIGHT", p2type, "Player 2"))
+			add(floor = new Wall(_world, 64, FlxG.height - 64, FlxG.width - 128, 64))
 		}
-		
+*/		
 		override public function update():void {
-			super.update()
+			super.update();
 			var xSpeed:Number,
 				ySpeed:Number
 			_world.Step(FlxG.elapsed, 10, 10)
 			_world.ClearForces();
 			
-			if (winner == NO_WINNER) {
+			/*if (winner == NO_WINNER) {
 				// Still playing
 				if (player1.y > FlxG.height) {
 					//_world.DestroyBody(player1._obj);
@@ -100,7 +105,26 @@ package RobotGame
 				// Display it until you click (because if use one of the player movements, they may still be holding that key)
 				if (FlxG.mouse.pressed()) {
 					resetRobotGame();
+				}*/
+			if (gameEnd) {
+				if (FlxG.keys.justPressed("SPACE")) {
+					FlxG.switchState(new MenuState());
 				}
+			}
+		}
+		
+		public function win(winner:String):void {
+				var newText:FlxText 
+			if (!gameEnd) {
+				newText = FlxText(add(new FlxText(0, 0, FlxG.width, winner + " wins!")));
+				newText.alignment = "center";
+				newText.size = 70;
+				gameEnd = true;
+			}
+			else {
+				newText = FlxText(add(new FlxText(0, 75, FlxG.width, "(but you both suck)")));
+				newText.alignment = "center";
+				newText.size = 15;
 			}
 		}
 	}

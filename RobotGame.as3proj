@@ -65,6 +65,8 @@
   <!-- Assets to embed into the output SWF -->
   <library>
     <asset path="src\resources\roball.png" />
+    <asset path="src\resources\p2sel.png" update="..\..\..\..\Public\Documents\Dropbox\General\Academic\Game Dev Studio\Final Project\p2sel.png" />
+    <asset path="src\resources\p1sel.png" update="..\..\..\..\Public\Documents\Dropbox\General\Academic\Game Dev Studio\Final Project\p1sel.png" />
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
