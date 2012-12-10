@@ -38,7 +38,7 @@ package RobotGame
 			_obj.SetLinearDamping(0.1)
 			_obj.SetAngularDamping(5)
 			_obj.GetFixtureList().SetRestitution(0.1) // dunno? Still bouncy.
-			_obj.SetLinearDamping(0.1);
+			//_obj.SetLinearDamping(0.1); // repeat - reason?
 			type = Type;
 			name = Name;
 		}
@@ -46,9 +46,9 @@ package RobotGame
 			var multiplier:Number = _obj.GetMass()
 			var angVelMult:Number = 1; // holds any mults to increase angular velocity (e.g. angOppositeMult)
 			var angOppositeMult:Number = 1.3; // mult to increase angular velocity
-			var baseHeight:Number = 32.9; // anything above this means they are below the stage - this is ground level (opposite logic since origin starts in top-left)
+			var baseHeight:Number = 32.9; // (Box2D value) anything above this means they are below the stage - this is ground level (opposite logic since origin starts in top-left)
 			// Left ('A' or Left)
-			var heightAirControl:Number = 3; // height above baseHeight at which can do air control
+			var heightAirControl:Number = 3; // (Box2D value) height above baseHeight at which can do air control
 			var airSpeedControl:Number = 0.3; // give linear velocity in the air // Note: Might be a liiittle too much. Just your preference.
 			var groundSpeedControl:Number = 0.3; // give linear velocity on ground
 			var speed:b2Vec2 = _obj.GetLinearVelocity(); // holds the speed at points in this method
@@ -93,12 +93,13 @@ package RobotGame
 			}
 			// Keeping linear speed reasonable
 			speed = _obj.GetLinearVelocity()
-			if (FlxG.keys.pressed(leftControl))
+			/* Repeat of original movement code - why? Y U NO LYKE MAI NOO KOUD? */
+			/*if (FlxG.keys.pressed(leftControl))
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() - 1)
 			else if (FlxG.keys.pressed(rightControl))
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() + 1)
 			if (FlxG.keys.justPressed(jumpControl))
-				_obj.ApplyImpulse(calculateJumpDir(), _obj.GetPosition())
+				_obj.ApplyImpulse(calculateJumpDir(), _obj.GetPosition())*/
 			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
 			
 			super.update()

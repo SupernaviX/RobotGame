@@ -45,16 +45,17 @@ package RobotGame
 			normalsFromCollisions[obj] = dir
 		}
 		
+		public function subtractNormal(obj:b2Body):void {
+			delete normalsFromCollisions[obj]
+		}
+		
+		/* Convenience function for setting SolidObject position using Flixel coords. */
 		public function SetPosition(X:Number, Y:Number):void {
 			x = X;
 			y = Y;
 			_obj.SetPosition(new b2Vec2((X + (width / 2)) / ratio, (Y + (height / 2)) / ratio));
 		}
 		
-		public function subtractNormal(obj:b2Body):void {
-			delete normalsFromCollisions[obj]
-		}
-
 		override public function update():void {
 			x = (_obj.GetPosition().x * ratio) - (width / 2)
 			y = (_obj.GetPosition().y * ratio) - (height / 2)
