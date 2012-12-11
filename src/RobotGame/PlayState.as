@@ -7,7 +7,7 @@ package RobotGame
 	import Box2D.Collision.*
 	import Box2D.Collision.Shapes.*
 	import Box2D.Common.Math.*
-
+	
 	public class PlayState extends FlxState
 	{
 		// World
@@ -38,7 +38,7 @@ package RobotGame
 		public var score:Number = 0;
 		public var player1_damg:Number = 0.0; // [0.0, 10.0] // for the lulz
 		public var player2_damg:Number = 0.0; // [0.0, 10.0]
-		public static var p1type:int = 0, p2type:int = 1;
+		public static var p1type:int = 0, p2type:int = 3;
 		private var gameEnd:Boolean = false;
 		
 		override public function create(): void {
@@ -56,8 +56,8 @@ package RobotGame
 		}
 		
 		public function initializePlayers():void {
-			add(player1 = new Robot(_world, player1_startX, players_startY, "W", "A", "D", p1type, "Player 1"))
-			add(player2 = new Robot(_world, player2_startX, players_startY, "UP", "LEFT", "RIGHT", p2type, "Player 2"))
+			add(player1 = new Robot(_world, player1_startX, players_startY, "W", "A", "D", p1type, "Player 2"))
+			add(player2 = new Robot(_world, player2_startX, players_startY, "UP", "LEFT", "RIGHT", p2type, "Player 1"))
 		}
 		
 		public function makeStage():void {
@@ -125,7 +125,7 @@ package RobotGame
 		}
 		
 		public function win(winner:String):void {
-				var newText:FlxText 
+				var newText:FlxText;
 			if (!gameEnd) {
 				newText = FlxText(add(new FlxText(0, 0, FlxG.width, winner + " wins!")));
 				newText.alignment = "center";
@@ -137,6 +137,7 @@ package RobotGame
 				newText.alignment = "center";
 				newText.size = 15;
 			}
+			newText.font = "stencil";
 		}
 	}
 

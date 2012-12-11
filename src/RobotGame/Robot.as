@@ -23,9 +23,9 @@ package RobotGame
 		public var repulsionSpeed:Number = 48
 		private var imageIndex:Number = 0;
 		private var type:int;
-		private var name:String;
+		private var enemyName:String;
 		
-		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String, Type:int, Name:String) 
+		public function Robot(World:b2World, X:Number, Y:Number, JumpControl:String, LeftControl:String, RightControl:String, Type:int, EnemyName:String) 
 		{
 			super(World, X, Y)
 			jumpControl = JumpControl
@@ -40,7 +40,7 @@ package RobotGame
 			_obj.GetFixtureList().SetRestitution(0.1) // dunno? Still bouncy.
 			//_obj.SetLinearDamping(0.1); // repeat - reason?
 			type = Type;
-			name = Name;
+			enemyName = EnemyName;
 		}
 		override public function update():void {
 			var multiplier:Number = _obj.GetMass()
@@ -62,6 +62,7 @@ package RobotGame
 			var heightAirControl:Number = 3; // (Box2D value) height above baseHeight at which can do air control
 			var speed:b2Vec2 = _obj.GetLinearVelocity(); // holds the speed at points in this method
 			if (FlxG.keys.pressed(leftControl)) {
+				facing = FlxObject.LEFT;
 				// If we're in the air
 				if (_obj.GetPosition().y < (baseHeight - heightAirControl)) {
 					_obj.SetLinearVelocity(new b2Vec2(speed.x - airSpeedControl, speed.y));
@@ -78,6 +79,7 @@ package RobotGame
 			}
 			// Right ('D' or Right)
 			else if (FlxG.keys.pressed(rightControl)) {
+				facing = FlxObject.RIGHT;
 				// If we're in the air
 				if (_obj.GetPosition().y < (baseHeight - heightAirControl)) {
 					_obj.SetLinearVelocity(new b2Vec2(speed.x + airSpeedControl, speed.y));
@@ -92,7 +94,7 @@ package RobotGame
 				}
 			}
 			// Getting correct running sprite
-			imageIndex += _obj.GetAngularVelocity() * 5.625 / 360
+			imageIndex += _obj.GetAngularVelocity() * 5.625 / 36
 			if (imageIndex >= 16) imageIndex -= 16;
 			if (imageIndex < 0) imageIndex += 16;
 			frame = Math.floor(imageIndex);
@@ -118,7 +120,7 @@ package RobotGame
 			
 			if (x > FlxG.width || x < -width || y > FlxG.height) {
 				PlayState(FlxG.state).remove(this);
-				PlayState(FlxG.state).win(name);
+				PlayState(FlxG.state).win(enemyName);
 			}
 		}
 		public function calculateJumpDir():b2Vec2 {

@@ -12,6 +12,7 @@ package RobotGame
 		[Embed(source = '../resources/p1sel.png')] private var sprP1sel:Class;
 		[Embed(source = '../resources/p2sel.png')] private var sprP2sel:Class;
 		[Embed(source = '../resources/Robo_Bkgrd.png')] private var sprBG:Class;
+		[Embed(source = '../resources/Stencilia-A.ttf', fontFamily="stencil", embedAsCFF="false")] public var menuText:String;
 		private var characterChoices:FlxGroup;
 		private var p1sel:FlxSprite, p2sel:FlxSprite;
 		public function MenuState() 
@@ -20,39 +21,43 @@ package RobotGame
 			add(new FlxSprite(0, 0, sprBG));
 			add(characterChoices = new FlxGroup());
 			for (var i:uint = 0; i < 4; ++i) {
-				var newSprite:FlxSprite = FlxSprite(characterChoices.add(new FlxSprite((i + 1) * (FlxG.width/5) - 24, 64)));
+				var newSprite:FlxSprite = FlxSprite(characterChoices.add(new FlxSprite((i + 1) * (FlxG.width/5) - 24, 360)));
 				newSprite.loadGraphic(charSprites[i], true, false, 49, 49);
 				newSprite.addAnimation("Run", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 30, true);
 				newSprite.play("Run");
 			}
 			add(p1sel = new FlxSprite(0, 0, sprP1sel));
 			add(p2sel = new FlxSprite(0, 0, sprP2sel));
+			
+			var title:FlxText = new FlxText(0, 32, FlxG.width, "ROLL WITH IT");
+			title.setFormat("stencil", 192, 0xffffff, "center")
+			add(title);
 		}
 		
 		override public function update():void {
 			super.update();
-			if (FlxG.keys.justPressed("LEFT")) {
+			if (FlxG.keys.justPressed("A")) {
 				--PlayState.p1type;
 				if (PlayState.p1type < 0) PlayState.p1type += characterChoices.countLiving();
 				if (PlayState.p1type == PlayState.p2type) --PlayState.p1type;
 				if (PlayState.p1type < 0) PlayState.p1type += characterChoices.countLiving();
 			}
 			
-			if (FlxG.keys.justPressed("RIGHT")) {
+			if (FlxG.keys.justPressed("D")) {
 				++PlayState.p1type;
 				if (PlayState.p1type >= characterChoices.countLiving()) PlayState.p1type -= characterChoices.countLiving();
 				if (PlayState.p1type == PlayState.p2type) ++PlayState.p1type;
 				if (PlayState.p1type >= characterChoices.countLiving()) PlayState.p1type -= characterChoices.countLiving();
 			}
 			
-			if (FlxG.keys.justPressed("A")) {
+			if (FlxG.keys.justPressed("LEFT")) {
 				--PlayState.p2type;
 				if (PlayState.p2type < 0) PlayState.p2type += characterChoices.countLiving();
 				if (PlayState.p1type == PlayState.p2type) --PlayState.p2type;
 				if (PlayState.p2type < 0) PlayState.p2type += characterChoices.countLiving();
 			}
 			
-			if (FlxG.keys.justPressed("D")) {
+			if (FlxG.keys.justPressed("RIGHT")) {
 				++PlayState.p2type;
 				if (PlayState.p2type >= characterChoices.countLiving()) PlayState.p2type -= characterChoices.countLiving();
 				if (PlayState.p1type == PlayState.p2type) ++PlayState.p2type;
