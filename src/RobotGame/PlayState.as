@@ -34,6 +34,8 @@ package RobotGame
 		public var player2_damg:Number = 0.0; // [0.0, 10.0]
 		public static var p1type:int = 0, p2type:int = 1;
 		private var gameEnd:Boolean = false;
+		// Music
+		[Embed(source = '../resources/RobotSong.mp3')] private var bgMusic:Class;
 		
 		override public function create(): void {
 			super.create()
@@ -45,6 +47,8 @@ package RobotGame
 			initializePlayers();
 			
 			makeStage();
+			
+			initializeMusic();
 		}
 		
 		public function initializePlayers():void {
@@ -69,6 +73,10 @@ package RobotGame
 			add(wallLeft = new Wall(_world, -wallWidth, 0, wallWidth, wallHeight))
 			add(wallRight = new Wall(_world, FlxG.width, 0, wallWidth, wallHeight))
 			//add(new Wall(_world, 0, 0, FlxG.width, 2)) // ceiling // adding this with restitution of 10 is quite cool 8O
+		}
+		
+		public function initializeMusic():void {
+			FlxG.play(bgMusic, 1, true);
 		}
 		
 /*		public function resetRobotGame():void {
