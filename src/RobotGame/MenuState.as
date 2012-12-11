@@ -12,9 +12,16 @@ package RobotGame
 		[Embed(source = '../resources/p1sel.png')] private var sprP1sel:Class;
 		[Embed(source = '../resources/p2sel.png')] private var sprP2sel:Class;
 		[Embed(source = '../resources/Robo_Bkgrd.png')] private var sprBG:Class;
-		[Embed(source = '../resources/Stencilia-A.ttf', fontFamily="stencil", embedAsCFF="false")] public var menuText:String;
+		[Embed(source = '../resources/Stencilia-A.ttf', fontFamily = "stencil", embedAsCFF = "false")] public var menuText:String;
 		private var characterChoices:FlxGroup;
 		private var p1sel:FlxSprite, p2sel:FlxSprite;
+		private var d1:FlxText, d2:FlxText;
+		private var charTexts:Array = [
+			"The fastest!",
+			"The heaviest!",
+			"The best jumper!",
+			"The strongest!"]
+		
 		public function MenuState() 
 		{
 			super();
@@ -32,10 +39,15 @@ package RobotGame
 			var title:FlxText = new FlxText(0, 32, FlxG.width, "ROLL WITH IT");
 			title.setFormat("stencil", 192, 0xffffff, "center")
 			add(title);
+			add(d1 = new FlxText(0, FlxG.height - 40, FlxG.width, charTexts[PlayState.p1type]));
+			add(d2 = new FlxText(0, FlxG.height - 40, FlxG.width, charTexts[PlayState.p2type]));
+			d1.setFormat("stencil", 32, 0x05edFF, "left");
+			d2.setFormat("stencil", 32, 0xee0500, "right");
 		}
 		
 		override public function update():void {
 			super.update();
+			
 			if (FlxG.keys.justPressed("A")) {
 				--PlayState.p1type;
 				if (PlayState.p1type < 0) PlayState.p1type += characterChoices.countLiving();
@@ -73,6 +85,9 @@ package RobotGame
 			
 			p2sel.x = FlxSprite(characterChoices.members[PlayState.p2type]).x + 8;
 			p2sel.y = FlxSprite(characterChoices.members[PlayState.p2type]).y + 50;
+			
+			d1.text = charTexts[PlayState.p1type];
+			d2.text = charTexts[PlayState.p2type];
 		}
 		
 	}
