@@ -1,5 +1,6 @@
 package RobotGame 
 {
+	import adobe.utils.CustomActions;
 	import flash.sampler.NewObjectSample;
 	import org.flixel.*
 	import Box2D.Dynamics.*
@@ -13,10 +14,15 @@ package RobotGame
 		public var _world:b2World
 		// Stage
 		public var floor:Wall
+		public var platformLeft:Wall
+		public var platformRight:Wall
+		public var platformTop:Wall
 		public var floorLeft:Wall
 		public var floorRight:Wall
 		public var wallLeft:Wall
 		public var wallRight:Wall
+		// Background
+		[Embed(source = '../resources/Robo_Bkgrd.png')] private var sprBG:Class;
 		// Players
 		public var NO_WINNER:Number = 0;
 		//public var bottomOfStage:Number = 50.0; // might be less, but this is fine (768/20)
@@ -42,6 +48,8 @@ package RobotGame
 			_world.SetContactListener(new ContactListener())
 			//FlxG.worldBounds = new FlxRect(0, 0, 1024, 768)
 			
+			add(new FlxSprite(0, 0, sprBG));
+						
 			initializePlayers();
 			
 			makeStage();
@@ -56,19 +64,24 @@ package RobotGame
 			// Single platform ' _____ '
 			//add(floor = new Wall(_world, 64, FlxG.height - 64, FlxG.width - 128, 64))
 			// Multiple platforms '_ ___ _'
-			var blockWidth:Number = 100;
-			var platHeight:Number = 64;
-			var platSpacing:Number = 200;
-			var wallWidth:Number = 10;
-			var wallHeight:Number = 768 + 100; // for good measure
+			//var blockWidth:Number = 100;
+			//var platHeight:Number = 64;
+			//var platSpacing:Number = 200;
+			//var wallWidth:Number = 10;
+			//var wallHeight:Number = 768 + 100; // for good measure
 			// Floor(s)
-			add(floorLeft = new Wall(_world, 0, FlxG.height - platHeight, blockWidth, platHeight))
-			add(floor = new Wall(_world, blockWidth + platSpacing, FlxG.height - platHeight, FlxG.width - (blockWidth + platSpacing) * 2, platHeight))
-			add(floorRight = new Wall(_world, FlxG.width - blockWidth, FlxG.height - platHeight, blockWidth, platHeight))
+			//add(floorLeft = new Wall(_world, 0, FlxG.height - platHeight, blockWidth, platHeight))
+			//add(floor = new Wall(_world, blockWidth + platSpacing, FlxG.height - platHeight, FlxG.width - (blockWidth + platSpacing) * 2, platHeight))
+			//add(floorRight = new Wall(_world, FlxG.width - blockWidth, FlxG.height - platHeight, blockWidth, platHeight))
 			// Walls
-			add(wallLeft = new Wall(_world, -wallWidth, 0, wallWidth, wallHeight))
-			add(wallRight = new Wall(_world, FlxG.width, 0, wallWidth, wallHeight))
+			//add(wallLeft = new Wall(_world, -wallWidth, 0, wallWidth, wallHeight))
+			//add(wallRight = new Wall(_world, FlxG.width, 0, wallWidth, wallHeight))
 			//add(new Wall(_world, 0, 0, FlxG.width, 2)) // ceiling // adding this with restitution of 10 is quite cool 8O
+			
+			add(floor = new Wall(_world, 160, 428, 710, 24, 0))
+			add(platformTop = new Wall(_world, 435, 178, 165, 20, 0))
+			add(platformLeft = new Wall(_world, 351.5, 309, 160, 20, -16))
+			add(platformRight = new Wall(_world, 672.5, 309, 160, 20, 16))
 		}
 		
 /*		public function resetRobotGame():void {

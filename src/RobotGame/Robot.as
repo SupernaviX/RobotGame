@@ -20,7 +20,7 @@ package RobotGame
 		public var jumpControl:String
 		public var leftControl:String
 		public var rightControl:String
-		public var repulsionSpeed:Number = 32
+		public var repulsionSpeed:Number = 48
 		private var imageIndex:Number = 0;
 		private var type:int;
 		private var name:String;
@@ -34,7 +34,7 @@ package RobotGame
 			this.loadGraphic(charSprites[Type],true,true,49,49)
 			//this.makeGraphic(96, 96)
 			var shape:b2CircleShape = new b2CircleShape(24.5/ratio)
-			createBody(shape, b2Body.b2_dynamicBody)
+			createBody(shape, b2Body.b2_dynamicBody, 0.2, 0.3, Type == 1 ? 1.05 : 0.7) // type 1 is heavier than others
 			_obj.SetLinearDamping(0.1)
 			_obj.SetAngularDamping(5)
 			_obj.GetFixtureList().SetRestitution(0.1) // dunno? Still bouncy.
@@ -44,13 +44,22 @@ package RobotGame
 		}
 		override public function update():void {
 			var multiplier:Number = _obj.GetMass()
-			var angVelMult:Number = 1; // holds any mults to increase angular velocity (e.g. angOppositeMult)
-			var angOppositeMult:Number = 1.3; // mult to increase angular velocity
+			var angVelMult:Number, angOppositeMult:Number,
+				airSpeedControl:Number, groundSpeedControl:Number
+			if (type == 0) { //This robot is fastest
+				angVelMult = 1.5;
+				angOppositeMult = 1.95;
+				airSpeedControl = 0.45;
+				groundSpeedControl = 0.45;
+			} else {
+				angVelMult = 1; // holds any mults to increase angular velocity (e.g. angOppositeMult)
+				angOppositeMult = 1.3; // mult to increase angular velocity
+				airSpeedControl = 0.3; // give linear velocity in the air // Note: Might be a liiittle too much. Just your preference.
+				groundSpeedControl = 0.3; // give linear velocity on ground
+			}
 			var baseHeight:Number = 32.9; // (Box2D value) anything above this means they are below the stage - this is ground level (opposite logic since origin starts in top-left)
 			// Left ('A' or Left)
 			var heightAirControl:Number = 3; // (Box2D value) height above baseHeight at which can do air control
-			var airSpeedControl:Number = 0.3; // give linear velocity in the air // Note: Might be a liiittle too much. Just your preference.
-			var groundSpeedControl:Number = 0.3; // give linear velocity on ground
 			var speed:b2Vec2 = _obj.GetLinearVelocity(); // holds the speed at points in this method
 			if (FlxG.keys.pressed(leftControl)) {
 				// If we're in the air
@@ -100,7 +109,10 @@ package RobotGame
 				_obj.SetAngularVelocity(_obj.GetAngularVelocity() + 1)
 			if (FlxG.keys.justPressed(jumpControl))
 				_obj.ApplyImpulse(calculateJumpDir(), _obj.GetPosition())*/
-			_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
+			if (type == 0)
+				_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -54, 54), speed.y))
+			else
+				_obj.SetLinearVelocity(new b2Vec2(b2Math.Clamp(speed.x, -36, 36), speed.y))
 			
 			super.update()
 			
@@ -117,11 +129,11 @@ package RobotGame
 					normalFromOther:b2Vec2 = normalsFromCollisions[key]
 				dir.Add(normalFromOther)
 				otherDir = normalFromOther.GetNegative()
-				otherDir.Multiply(repulsionSpeed)
+				otherDir.Multiply(type == 3 ? repulsionSpeed * 1.5 : repulsionSpeed) //type 3 pushes harder
 				otherObject.ApplyImpulse(otherDir, otherObject.GetPosition())
 			}
 			dir.Normalize()
-			dir.Multiply(repulsionSpeed)
+			dir.Multiply(type == 2 ? repulsionSpeed * 1.5 : repulsionSpeed) //type 2 jumps higher
 			return dir
 		}
 		
